@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-namespace LegoCity.Api.DiscordBot.Modules
+namespace LegoCity.Api.Discord.Modules
 {
-    using Discord.Interactions;
-    using LegoCity.Api.Services.DiscordBot;
+    using global::Discord.Interactions;
+    using LegoCity.Api.Services.Discord;
     using LegoCity.Api.Services.Lego;
 
     /// <summary></summary>

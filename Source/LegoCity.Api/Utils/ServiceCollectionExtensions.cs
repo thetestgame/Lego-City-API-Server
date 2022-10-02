@@ -3,11 +3,11 @@
 
 namespace LegoCity.Api.Utils
 {
-    using Discord;
-    using Discord.Interactions;
-    using Discord.WebSocket;
+    using global::Discord;
+    using global::Discord.Interactions;
+    using global::Discord.WebSocket;
     using LegoCity.Api.Models.Options;
-    using LegoCity.Api.Services.DiscordBot;
+    using LegoCity.Api.Services.Discord;
     using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using SharpBrick.PoweredUp;

@@ -3,7 +3,7 @@
 
 namespace LegoCity.Api.Utils
 {
-    using Discord;
+    using global::Discord;
 
     /// <summary>Static extension methods for the .NET <see cref="ILogger"/> object.</summary>
     public static class LoggerExtensions

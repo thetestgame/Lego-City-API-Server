@@ -3,9 +3,9 @@
 
 namespace LegoCity.Api.Utils.Attributes
 {
-    using Discord.Interactions;
-    using Discord.WebSocket;
-    using Discord;
+    using global::Discord.Interactions;
+    using global::Discord.WebSocket;
+    using global::Discord;
     
     /// <summary></summary>
     internal class DoDiscordUserCheck : PreconditionAttribute

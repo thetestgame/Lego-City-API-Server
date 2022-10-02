@@ -44,8 +44,9 @@ namespace LegoCity.Api.Services.Lego
             activeTrain = activeHub;
             foreach (var hub in GetTrainHubs())
             {
-                var greenValue = hub == activeHub ? 255 : 0;
-                await hub.RgbLight.SetRgbColorsAsync(0, Convert.ToByte(greenValue), 0);
+                var greenValue = Convert.ToByte(hub == activeHub ? 255 : 0);
+                var redValue = Convert.ToByte(hub != activeHub ? 255: 0);
+                await hub.RgbLight.SetRgbColorsAsync(redValue, greenValue, 0);
             }
         }
 

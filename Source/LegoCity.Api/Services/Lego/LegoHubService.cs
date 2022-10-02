@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-namespace LegoCity.Api.Services
+namespace LegoCity.Api.Services.Lego
 {
     using SharpBrick.PoweredUp;
-    
+
     /// <summary></summary>
     public class LegoHubService
     {
@@ -16,6 +16,14 @@ namespace LegoCity.Api.Services
             this.logger = logger;
             this.poweredUpHost = poweredUpHost;
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="THub"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public THub? GetHubByName<THub>(string name) where THub : Hub => this.poweredUpHost.Hubs.FirstOrDefault(h => h.AdvertisingName == name) as THub;
 
         /// <summary>
         /// Retrieves all the connected <see cref="SystemTrainMotor"/> instances connected to a Lego <see cref="Hub"/> instance.

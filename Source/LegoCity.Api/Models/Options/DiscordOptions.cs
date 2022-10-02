@@ -8,5 +8,8 @@ namespace LegoCity.Api.Models.Options
     {
         /// <summary>Configured Bot token for the Discord bot.</summary>
         public string? BotToken { get; set; }
+        
+        /// <summary>Configured Discord guild used for testing.</summary>
+        public ulong TestGuild { get; set;}
     }
 }

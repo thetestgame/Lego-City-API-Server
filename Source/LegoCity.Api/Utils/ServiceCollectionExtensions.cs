@@ -7,7 +7,8 @@ namespace LegoCity.Api.Utils
     using Discord.Interactions;
     using Discord.WebSocket;
     using LegoCity.Api.Models.Options;
-    using LegoCity.Api.Services;
+    using LegoCity.Api.Services.DiscordBot;
+    using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using SharpBrick.PoweredUp;
 

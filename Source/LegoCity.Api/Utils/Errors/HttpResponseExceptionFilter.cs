@@ -6,7 +6,7 @@ namespace LegoCity.Api.Utils.Errors
     using Microsoft.AspNetCore.Mvc.Filters;
     using Microsoft.AspNetCore.Mvc;
     using System.Net;
-
+    
     public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
     {
         public int Order => int.MaxValue - 10;
@@ -15,6 +15,9 @@ namespace LegoCity.Api.Utils.Errors
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context.Exception == null)
+                return;
+
             if (context.Exception is HttpResponseException httpResponseException)
             {
                 context.Result = new ObjectResult(httpResponseException.Value)

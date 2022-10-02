@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-namespace LegoCity.Api.Services
+namespace LegoCity.Api.Services.DiscordBot
 {
     using Discord;
     using Discord.Interactions;
     using Discord.WebSocket;
     using LegoCity.Api;
+    using LegoCity.Api.Models.Options;
+    using LegoCity.Api.Utils;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -15,36 +18,35 @@ namespace LegoCity.Api.Services
     /// <summary>A service that handles Discord interactions through the configured Discord bot.</summary>
     public class DiscordInteractionHandler
     {
+        private readonly ILogger<DiscordInteractionHandler> logger;
+        private readonly DiscordOptions discordOptions;
         private readonly DiscordSocketClient client;
         private readonly InteractionService handler;
         private readonly IServiceProvider services;
         private readonly IConfiguration configuration;
 
-        public DiscordInteractionHandler(DiscordSocketClient client, InteractionService handler, IServiceProvider services, IConfiguration config)
+        public DiscordInteractionHandler(ILogger<DiscordInteractionHandler> logger, IOptions<DiscordOptions> options, 
+            DiscordSocketClient client, InteractionService handler, IServiceProvider services, IConfiguration config)
         {
+            this.logger = logger;
             this.client = client;
             this.handler = handler;
             this.services = services;
-            configuration = config;
+            this.configuration = config;
+            this.discordOptions = options.Value;
         }
-
+        
         public async Task InitializeAsync()
         {
             // Process when the client is ready, so we can register our commands.
-            client.Ready += ReadyAsync;
-            handler.Log += LogAsync;
+            this.client.Ready += this.ReadyAsync;
+            this.handler.Log += this.logger.LogDiscordMessageAsync;
 
             // Add the public modules that inherit InteractionModuleBase<T> to the InteractionService
-            await handler.AddModulesAsync(Assembly.GetEntryAssembly(), services);
+            await this.handler.AddModulesAsync(Assembly.GetEntryAssembly(), services);
 
             // Process the InteractionCreated payloads to execute Interactions commands
-            client.InteractionCreated += HandleInteraction;
-        }
-
-        private Task LogAsync(LogMessage log)
-        {
-            Console.WriteLine(log);
-            return Task.CompletedTask;
+            this.client.InteractionCreated += HandleInteraction;
         }
 
         private async Task ReadyAsync()
@@ -52,9 +54,14 @@ namespace LegoCity.Api.Services
             // Context & Slash commands can be automatically registered, but this process needs to happen after the client enters the READY state.
             // Since Global Commands take around 1 hour to register, we should use a test guild to instantly update and test our commands.
             if (Program.IsDebug())
-                await handler.RegisterCommandsToGuildAsync(configuration.GetValue<ulong>("testGuild"), true);
+            {
+                if (this.discordOptions.TestGuild <= 0)
+                    throw new Exception("Invalid Discord TestGuild configured. Please configure a proper Discord guild id for testing");
+                
+                await this.handler.RegisterCommandsToGuildAsync(this.discordOptions.TestGuild, true);
+            }
             else
-                await handler.RegisterCommandsGloballyAsync(true);
+                await this.handler.RegisterCommandsGloballyAsync(true);
         }
 
         private async Task HandleInteraction(SocketInteraction interaction)
@@ -62,10 +69,10 @@ namespace LegoCity.Api.Services
             try
             {
                 // Create an execution context that matches the generic type parameter of your InteractionModuleBase<T> modules.
-                var context = new SocketInteractionContext(client, interaction);
+                var context = new SocketInteractionContext(this.client, interaction);
 
                 // Execute the incoming command.
-                var result = await handler.ExecuteCommandAsync(context, services);
+                var result = await this.handler.ExecuteCommandAsync(context, this.services);
 
                 if (!result.IsSuccess)
                     switch (result.Error)

@@ -3,6 +3,7 @@
 
 namespace LegoCity.Api.Controllers
 {
+    using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using Microsoft.AspNetCore.Mvc;
     using SharpBrick.PoweredUp;
@@ -20,13 +21,13 @@ namespace LegoCity.Api.Controllers
         /// <summary>
         /// Retrieves a single <see cref="Hub"/> instance by its <see cref="Hub.Id"/>.
         /// </summary>
-        /// <param name="hubId">Hub Id to retrieve if available.</param>
+        /// <param name="hubName">Hub name to retrieve if available.</param>
         /// <returns>Hub instance if found. Otherwise 404.</returns>
-        [HttpGet("id/{hubId}")]
-        public Hub GetById([FromServices] PoweredUpHost poweredUpHost, byte hubId)
+        [HttpGet("id/{hubName}")]
+        public Hub GetById([FromServices] LegoHubService hubService, string hubName)
         {
-            var hub = poweredUpHost.Hubs.FirstOrDefault(hub => hub.HubId == hubId);
-            if (hub == null) throw new HttpObjectNotFoundException($"Train with id {hubId} not found.");
+            var hub = hubService.GetHubByName<Hub>(hubName);
+            if (hub == null) throw new HttpObjectNotFoundException($"Hub with name {hubName} not found.");
             return hub;
         }
 

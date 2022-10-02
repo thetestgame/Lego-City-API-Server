@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-namespace LegoCity.Api.Services
+namespace LegoCity.Api.Services.Lego
 {
     using SharpBrick.PoweredUp;
 
@@ -17,19 +17,20 @@ namespace LegoCity.Api.Services
             this.poweredUpHost = poweredUpHost;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken) 
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.poweredUpHost.Discover(async hub => await this.HandleDiscoveredHubAsync(hub), stoppingToken);
+            poweredUpHost.Discover(async hub => await HandleDiscoveredHubAsync(hub), stoppingToken);
             return Task.CompletedTask;
         }
 
-        private async Task HandleDiscoveredHubAsync(SharpBrick.PoweredUp.Hub hub)
+        private async Task HandleDiscoveredHubAsync(Hub hub)
         {
-            try { 
+            try
+            {
                 await hub.ConnectAsync();
-                this.logger.LogInformation($"Connected to hub: {hub.AdvertisingName} ({hub.SystemType})");
+                logger.LogInformation($"Connected to hub: {hub.AdvertisingName} ({hub.SystemType})");
             }
-            catch { this.logger.LogWarning($"Failed to connect to hub: {hub.AdvertisingName} ({hub.SystemType})"); }
+            catch { logger.LogWarning($"Failed to connect to hub: {hub.AdvertisingName} ({hub.SystemType})"); }
         }
     }
 }

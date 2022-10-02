@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="nlog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
     <PackageReference Include="Discord.Net" Version="3.8.1" />
     <PackageReference Include="Discord.Net.Interactions" Version="3.8.1" />
@@ -24,10 +28,12 @@
 
   <ItemGroup>
     <Folder Include="Hubs\" />
+    <Folder Include="Services\Environment\" />
+    <Folder Include="Services\TrainOperator\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="nlog.xml">
+    <None Include="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

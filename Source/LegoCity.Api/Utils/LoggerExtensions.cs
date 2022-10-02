@@ -27,7 +27,7 @@ namespace LegoCity.Api.Utils
                     break;
                 case LogSeverity.Error:
                 case LogSeverity.Critical:
-                    logger.LogError(message.Message);
+                    logger.LogError(message.Exception, message.Message);
                     break;
             }
         }

@@ -1,0 +1,41 @@
+# Primary Test pipeline for Lego City API Server
+name: Test CI
+
+# Triggers defined for this workflow
+on:
+    # Handle pushes or pull requests to the main branch
+  push:
+    branches:
+    - main
+
+  pull_request:
+    branches:
+    - main
+
+# All jobs defined by this workflow
+jobs:
+  # Perform a basic build and automatic testing
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+        # Checkout our application source code
+        - uses: actions/checkout@v3
+
+        # Install our required dotnet version
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v2
+          with:
+            dotnet-version: 6.0.x
+
+        # Restore any configured NuGet dependencies
+        - name: Restore dependencies
+          run: dotnet restore ./Source/LegoCity.sln
+
+        # Perform a basic solution build`
+        - name: Build
+          run: dotnet build ./Source/LegoCity.sln --no-restore
+
+        # Perform any configured solution tests
+        - name: Test
+          run: dotnet test ././Source/LegoCity.sln --no-build --verbosity normal

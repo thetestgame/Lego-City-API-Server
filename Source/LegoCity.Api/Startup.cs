@@ -6,7 +6,6 @@ namespace LegoCity.Api
     using HealthChecks.UI.Client;
     using LegoCity.Api.Utils;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-    using Microsoft.OpenApi.Models;
 
     /// <summary>Startup class for the Eco Website.</summary>
     public class Startup
@@ -27,16 +26,8 @@ namespace LegoCity.Api
             services.AddLegoPoweredUpServices();
             services.AddDiscordBotSupport(this.Configuration);
 
-            // Enable Swashbuckle
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "Lego City API",
-                    Description = "A simple API to control a Lego City's trains. First iteration",
-                });
-            });
+            services.AddApiVersioning();
+            services.AddSwaggerDocumentation();
         }
 
         /// <summary>This method gets called by the runtime. Use this method to configure the HTTP request pipeline.</summary>
@@ -46,19 +37,12 @@ namespace LegoCity.Api
             if (env.IsDevelopment())
             {
                 app.UseExceptionHandler("/error-development");
-
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                });
-
+                app.AddSwaggerDocumentation();
             }
             else
             {
                 app.UseExceptionHandler("/error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             }
 
             app.UseHttpsRedirection();

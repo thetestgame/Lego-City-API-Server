@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
-namespace LegoCity.Api.Controllers
+namespace LegoCity.Api.Controllers.V1
 {
     using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using Microsoft.AspNetCore.Mvc;
     using SharpBrick.PoweredUp;
 
-    /// <summary>Controller for interacting with the connected Lego trains.</summary>
+    /// <summary>V1 api controller for interacting with the connected Lego trains.</summary>
     [ApiController]
-    [Route("api/[controller]")]
-    public class HubController : Controller
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/hub")]
+    public class HubControllerV1 : Controller
     {
         /// <summary>Retrieves a complete list of all connected Lego Powered Up Hubs</summary>
         /// <returns><see cref="IEnumerable{T}"/> containing all connected <see cref="Hub"/> instances.</returns>

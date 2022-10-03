@@ -10,6 +10,7 @@ namespace LegoCity.Api.Utils
     using LegoCity.Api.Services.Discord;
     using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
+    using Microsoft.AspNetCore.Mvc;
     using SharpBrick.PoweredUp;
 
     /// <summary>Static extension methods for the .NET <see cref="IServiceCollection"/> object.</summary>
@@ -56,6 +57,30 @@ namespace LegoCity.Api.Utils
             services.AddSingleton<LegoHubService>();
             services.AddSingleton<LegoTrainService>();
             services.AddHostedService<LegoHubDiscoveryBackgroundService>();
+        }
+
+        /// <summary>Adds api versioning support to an <see cref="IServiceCollection"/> instance.</summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+        public static void AddApiVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+            });     
+        }
+
+        /// <summary>Adds api automatic documentation to an <see cref="IServiceCollection"/> instance.</summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+        public static void AddSwaggerDocumentation(this IServiceCollection services)
+        {
+            services.AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV";
+                setup.SubstituteApiVersionInUrl = true;
+            });
+            services.AddSwaggerGen();  
         }
     }
 }

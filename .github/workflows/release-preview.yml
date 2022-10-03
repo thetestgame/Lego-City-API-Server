@@ -1,0 +1,68 @@
+# Preview Release pipeline for Lego City API Server
+name: Preview Release Workflow
+
+# Triggers defined for this workflow
+on:
+  # Handle release preview tag pushes
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+-preview[0-9][0-9][0-9]"
+
+# Define workflow constants as environment variables
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-preview
+
+# All jobs defined by this workflow
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+        # Checkout our application source code
+        - name: Checkout
+          uses: actions/checkout@v2
+
+        # Set our version variable based on the tag
+        - name: Set VERSION variable from tag
+          run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+
+        # Authenticate with DockerHub prior to pushing
+        - name: Log in to Docker Hub
+          uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+
+        # Authenticate with the Github packages registry prior to pushing
+        - name: Log in to the Container registry
+          uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        # Extract metadata about this job execution and pack it into the various outgoing Docker images
+        - name: Extract metadata (tags, labels) for Docker
+          id: meta
+          uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+          with:
+            images: |
+              ${{ env.DOCKERHUB_OWNER }}/${{ env.IMAGE_Name }}
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+        # Deploy our created Docker images to the supported registries
+        - name: build and push Docker images
+          uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+          with:
+            context: ./Source
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+        
+        # Create oure public Github Release
+        - uses: ncipollo/release-action@v1
+          with:
+            prerelease: true
+            bodyFile: "RELEASE-NOTES"
+            token: ${{ secrets.GITHUB_TOKEN }}

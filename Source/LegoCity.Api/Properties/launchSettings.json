@@ -23,7 +23,8 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "DockerfileRunArguments": "--net=host --privileged"
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",

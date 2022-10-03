@@ -53,7 +53,7 @@ namespace LegoCity.Api.Utils
         public static void AddLegoPoweredUpServices(this IServiceCollection services)
         {
             services.AddPoweredUp();
-            services.AddWinRTBluetooth();            
+            services.AddBlueGigaBLEBluetooth();
             services.AddSingleton<LegoHubService>();
             services.AddSingleton<LegoTrainService>();
             services.AddHostedService<LegoHubDiscoveryBackgroundService>();

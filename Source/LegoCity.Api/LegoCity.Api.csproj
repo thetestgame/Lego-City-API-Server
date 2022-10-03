@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>fb346f1e-d21e-496e-9b35-863e80d6f56c</UserSecretsId>
@@ -25,8 +25,7 @@
     <PackageReference Include="NLog" Version="5.0.4" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.4" />
     <PackageReference Include="SharpBrick.PoweredUp" Version="4.0.5" />
-    <PackageReference Include="SharpBrick.PoweredUp.BlueGigaBLE" Version="4.0.5" />
-    <PackageReference Include="SharpBrick.PoweredUp.WinRT" Version="4.0.5" />
+    <PackageReference Include="SharpBrick.PoweredUp.BlueGigaBLE" Version="4.0.5"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 

@@ -6,12 +6,14 @@ namespace LegoCity.Api.Utils
     using global::Discord;
     using global::Discord.Interactions;
     using global::Discord.WebSocket;
+    using LegoCity.Api.Hubs;
     using LegoCity.Api.Models.Options;
     using LegoCity.Api.Services.Discord;
     using LegoCity.Api.Services.Environment;
     using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.OpenApi.Models;
     using SharpBrick.PoweredUp;
     using System.Runtime.InteropServices;
@@ -70,11 +72,22 @@ namespace LegoCity.Api.Utils
 
         /// <summary>Configures an <see cref="IServiceCollection"/> instance to support time of day management services.</summary>
         /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
-        public static void AddTimeOfDayServices(this IServiceCollection services)
+        /// <param name="section">Section to configure time of day options using.</param>
+        public static void AddTimeOfDayServices(this IServiceCollection services, IConfiguration section)
         {
+            services.Configure<TimeOfDayOptions>(section);
             services.AddSingleton<TimeOfDayManager>();
             services.AddHostedService<TimeOfDayBackgroundService>();
         }
+
+        /// <summary>Configures an <see cref="IServiceCollection"/> instance to support SignalR hub services.</summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+        public static void AddSignalRHubs(this IServiceCollection services) =>
+            services.AddSignalR(o =>
+            {                                                                       // Enables our SignalR implementation for communicating with game servers.
+                o.EnableDetailedErrors = true;                                      // Enable detailed error reporting.
+                o.AddFilter<SignalRHubLoggingFilter>();                             // Adds our custom filter for logging game server hub interaction and exceptions.
+            });
 
         /// <summary>Configures restful api versioning and documentation generation</summary>
         /// <param name="versionDescriptions">Dictionary [version, description] of all available apis to document.</param>

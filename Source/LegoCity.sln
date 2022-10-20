@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegoCity.Api", "LegoCity.Api\LegoCity.Api.csproj", "{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoCity.Api", "LegoCity.Api\LegoCity.Api.csproj", "{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegoCity.Api.Client", "LegoCity.Api.Client\LegoCity.Api.Client.csproj", "{B5F161BA-51AC-4515-9595-47E1A127F3E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F161BA-51AC-4515-9595-47E1A127F3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F161BA-51AC-4515-9595-47E1A127F3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F161BA-51AC-4515-9595-47E1A127F3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F161BA-51AC-4515-9595-47E1A127F3E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

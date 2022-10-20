@@ -20,10 +20,11 @@ namespace LegoCity.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.AddSignalRHubs();
             services.AddRestApiControllers();
 
             services.AddLegoPoweredUpServices();
-            services.AddTimeOfDayServices();
+            services.AddTimeOfDayServices(this.Configuration.GetSection("TimeOfDay"));
             services.AddDiscordBotSupport(this.Configuration);
 
             services.AddApiVersioning();

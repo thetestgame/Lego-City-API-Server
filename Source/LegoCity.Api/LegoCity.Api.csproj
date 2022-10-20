@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Hubs\" />
     <Folder Include="Services\TrainOperator\" />
   </ItemGroup>
 
@@ -39,6 +38,10 @@
     <None Include="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LegoCity.Api.Client\LegoCity.Api.Client.csproj" />
   </ItemGroup>
 
 </Project>

@@ -28,9 +28,9 @@ namespace LegoCity.Api.Services.Lego
             try
             {
                 await hub.ConnectAsync();
-                logger.LogInformation($"Connected to hub: {hub.AdvertisingName} ({hub.SystemType})");
+                logger.LogInformation("Connected to hub: {Name} ({Type})" , hub.AdvertisingName, hub.SystemType);
             }
-            catch { logger.LogWarning($"Failed to connect to hub: {hub.AdvertisingName} ({hub.SystemType})"); }
+            catch { logger.LogWarning("Failed to connect to hub: {Name} ({Type})" , hub.AdvertisingName, hub.SystemType); }
         }
     }
 }

@@ -82,10 +82,22 @@ namespace LegoCity.Api.Services.Lego
         public async Task SetTrainLightState(TwoPortHub hub, bool enabled)
         {
             // Retrieve our lights and verify there is at least one light attached            
-            var light = legoHubService.GetCustomLights(hub);
-            var powerMode = light.SingleValueMode<sbyte, sbyte>(0);
-            if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
-            else  await powerMode.WriteDirectModeDataAsync(0x00); 
+            var standardLights = this.legoHubService.GetTrainLights(hub);
+            foreach(var light in standardLights)
+            {
+                await light.DiscoverAsync();
+                var powerMode = light.SingleValueMode<sbyte, sbyte>(0);
+                if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
+                else await powerMode.WriteDirectModeDataAsync(0x00);
+            }
+
+            var customLight = this.legoHubService.GetCustomLights(hub);
+            if (customLight != null)
+            {
+                var powerMode = customLight.SingleValueMode<sbyte, sbyte>(0);
+                if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
+                else await powerMode.WriteDirectModeDataAsync(0x00);
+            }
         }
     }
 }

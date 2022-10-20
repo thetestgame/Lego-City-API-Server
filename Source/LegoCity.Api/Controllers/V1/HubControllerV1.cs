@@ -11,6 +11,7 @@ namespace LegoCity.Api.Controllers.V1
     /// <summary>V1 api controller for interacting with the connected Lego trains.</summary>
     [ApiController]
     [ApiVersion("1.0")]
+    [Tags("Hub Controller")]
     [Route("api/v{version:apiVersion}/hub")]
     public class HubControllerV1 : Controller
     {

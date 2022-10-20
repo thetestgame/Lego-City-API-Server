@@ -90,5 +90,22 @@ namespace LegoCity.Api.Services.Lego
             // Retrieve the speed of all connected train motors
             return motors.Select(motor => Convert.ToInt32(motor.Power));
         }
+
+        /// <summary>Sets the current light power status of a connected Lego Train hub </summary>
+        /// <param name="hub">Train <see cref="Hub"/> instance to set the current movement speed of.</param>
+        /// <param name="enabled">Flag enabling/disabling the lights on a given train</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="speed"/> is not between -100 and 100.</exception>
+        public async Task SetTrainLightState(Hub hub, bool enabled)
+        {
+            // Retrieve our lights and verify there is at least one light attached
+            var trainHub = hub as TwoPortHub;
+            if (trainHub == null)
+                return;
+            
+            var light = legoHubService.GetCustomLights(trainHub);
+            var powerMode = light.SingleValueMode<sbyte, sbyte>(0);
+            if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
+            else  await powerMode.WriteDirectModeDataAsync(0x00); 
+        }
     }
 }

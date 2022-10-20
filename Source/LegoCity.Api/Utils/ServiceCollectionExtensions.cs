@@ -8,10 +8,13 @@ namespace LegoCity.Api.Utils
     using global::Discord.WebSocket;
     using LegoCity.Api.Models.Options;
     using LegoCity.Api.Services.Discord;
+    using LegoCity.Api.Services.Environment;
     using LegoCity.Api.Services.Lego;
     using LegoCity.Api.Utils.Errors;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.OpenApi.Models;
     using SharpBrick.PoweredUp;
+    using System.Runtime.InteropServices;
 
     /// <summary>Static extension methods for the .NET <see cref="IServiceCollection"/> object.</summary>
     public static class ServiceCollectionExtensions
@@ -53,34 +56,56 @@ namespace LegoCity.Api.Utils
         public static void AddLegoPoweredUpServices(this IServiceCollection services)
         {
             services.AddPoweredUp();
-            services.AddBlueGigaBLEBluetooth();
+
+            // Add the matching bluetooth handler based on operating system
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                services.AddWinRTBluetooth();
+            else
+                services.AddBlueGigaBLEBluetooth();
+
             services.AddSingleton<LegoHubService>();
             services.AddSingleton<LegoTrainService>();
             services.AddHostedService<LegoHubDiscoveryBackgroundService>();
         }
 
-        /// <summary>Adds api versioning support to an <see cref="IServiceCollection"/> instance.</summary>
+        /// <summary>Configures an <see cref="IServiceCollection"/> instance to support time of day management services.</summary>
         /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
-        public static void AddApiVersioning(this IServiceCollection services)
+        public static void AddTimeOfDayServices(this IServiceCollection services)
         {
-            services.AddApiVersioning(options =>
-            {
-                options.DefaultApiVersion = new ApiVersion(1, 0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ReportApiVersions = true;
-            });     
+            services.AddSingleton<TimeOfDayManager>();
+            services.AddHostedService<TimeOfDayBackgroundService>();
         }
 
-        /// <summary>Adds api automatic documentation to an <see cref="IServiceCollection"/> instance.</summary>
-        /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
-        public static void AddSwaggerDocumentation(this IServiceCollection services)
+        /// <summary>Configures restful api versioning and documentation generation</summary>
+        /// <param name="versionDescriptions">Dictionary [version, description] of all available apis to document.</param>
+        public static void ConfigureApiVersioning(this IServiceCollection services, Dictionary<string, string>? versionDescriptions = default)
         {
-            services.AddVersionedApiExplorer(setup =>
+            services.AddApiVersioning(options =>                                    // Enables api versioning across our MVC controllers.
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);                   // Define our default api version
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+            });
+
+            services.AddVersionedApiExplorer(setup =>                               // Enables the versioned api explorer for viewing several versions of the EBS api in Swagger
             {
                 setup.GroupNameFormat = "'v'VVV";
                 setup.SubstituteApiVersionInUrl = true;
             });
-            services.AddSwaggerGen();  
+
+            if (versionDescriptions != null && versionDescriptions.Count > 0)      // Enables our Swagger documentation generator is requested.
+            {
+                services.AddSwaggerGen(setup =>
+                {                        
+                    foreach(var version in versionDescriptions)
+                        setup.SwaggerDoc(version.Key, new OpenApiInfo
+                        {
+                            Version = version.Key,
+                            Title = $"Lego City Api {version.Key}",
+                            Description = version.Value
+                        });
+                });
+            }
         }
     }
 }

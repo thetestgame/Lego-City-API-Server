@@ -11,6 +11,7 @@ namespace LegoCity.Api.Controllers.V1
     /// <summary>V1 api controller for interacting with the connected Lego trains.</summary>
     [ApiController]
     [ApiVersion("1.0")]
+    [Tags("Train Controller")]
     [Route("api/v{version:apiVersion}/train")]
     public class TrainControllerV1 : Controller
     {
@@ -54,6 +55,18 @@ namespace LegoCity.Api.Controllers.V1
             var train = trainService.GetTrainHubByName(hubName);
             if (train == null) throw new HttpObjectNotFoundException($"Train with name {hubName} not found.");
             await trainService.SetTrainSpeedAsync(train, speed);
+        }
+
+        [HttpPost("{hubName}/lights")]
+        /// <summary>Sets the light status of a specific train.</summary>
+        /// <param name="hubName">Name of the train to command.</param>
+        /// <inheritdoc cref="LegoTrainService.SetTrainLightState(Hub, bool)"/>
+        /// <exception cref="HttpObjectNotFoundException">Thrown if the train is not found.</exception>
+        public async Task SetTrainLightAsync([FromServices] LegoTrainService trainService, string hubName, bool state)
+        {
+            var train = trainService.GetTrainHubByName(hubName);
+            if (train == null) throw new HttpObjectNotFoundException($"Train with name {hubName} not found.");
+            await trainService.SetTrainLightState(train, state);
         }
     }
 }

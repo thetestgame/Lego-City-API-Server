@@ -17,8 +17,11 @@ namespace LegoCity.Api.Services.Environment
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await this.timeOfDayManager.TickTimeOfDayAsync();
-            await Task.Delay(TimeSpan.FromMinutes(5));
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await this.timeOfDayManager.TickTimeOfDayAsync();
+                await Task.Delay(TimeSpan.FromSeconds(1));// TimeSpan.FromMinutes(5));
+            }
         }
     }
 }

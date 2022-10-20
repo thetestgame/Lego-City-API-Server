@@ -55,54 +55,34 @@ namespace LegoCity.Api.Services.Lego
         public async Task SetCurrentActiveTrainAsync(string name) => await SetCurrentActiveTrainAsync(GetTrainHubByName(name));
 
         /// <summary>Sets the current speed of a connected Lego Train's connected motors.</summary>
-        /// <param name="hub">Train <see cref="Hub"/> instance to set the current movement speed of.</param>
+        /// <param name="hub">Train <see cref="TwoPortHub"/> instance to set the current movement speed of.</param>
         /// <param name="speed">Speed to set the train too. Must be a value between -100 and 100 with zero being a full stop.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="speed"/> is not between -100 and 100.</exception>
-        public async Task SetTrainSpeedAsync(Hub hub, int speed)
+        public async Task SetTrainSpeedAsync(TwoPortHub hub, int speed)
         {
-            // Verify our speed is within range.
-            if (speed < -100 || speed > 100)
-                throw new ArgumentOutOfRangeException(nameof(speed), "Speed must be a value between -100 and 100");
-
-            // Retrieve our motors and verify there is at least one motor attached
-            var motors = legoHubService.GetTrainMotors(hub);
-            if (!motors.Any())
-                return;
-
-            // Set the speed of all motors
-            foreach (var motor in motors)
-            {
-                if (speed != 0) await motor.StartPowerAsync(Convert.ToSByte(speed));
-                else await motor.StopByBrakeAsync();
-            }
+            // Set the speed of the train motor
+            var motor = hub.A.GetDevice<SystemTrainMotor>();
+            if (speed != 0) await motor.StartPowerAsync(Convert.ToSByte(speed));
+            else await motor.StopByBrakeAsync();
         }
 
         /// <summary>Retrieves the current speed of all connected Lego Train motors on a given <see cref="Hub"/>.</summary>
-        /// <param name="hub">Train <see cref="Hub"/> instance to retrieve the current movement speeds from.</param>
-        /// <returns><see cref="IEnumerable{T}"/> containing int speed values for all connected Lego <see cref="SystemTrainMotor"/> instances.</returns>
-        public IEnumerable<int> GetTrainSpeed(Hub hub)
+        /// <param name="hub">Train <see cref="TwoPortHub"/> instance to retrieve the current movement speeds from.</param>
+        /// <returns>int value representing the speed of the connected Lego <see cref="SystemTrainMotor"/> instance.</returns>
+        public int GetTrainSpeed(TwoPortHub hub)
         {
-            // Retrieve our motors and verify there is at least one motor attached
-            var motors = legoHubService.GetTrainMotors(hub);
-            if (!motors.Any())
-                return Enumerable.Empty<int>();
-
-            // Retrieve the speed of all connected train motors
-            return motors.Select(motor => Convert.ToInt32(motor.Power));
+            var motor = hub.A.GetDevice<SystemTrainMotor>();
+            return Convert.ToInt32(motor.Power);
         }
 
         /// <summary>Sets the current light power status of a connected Lego Train hub </summary>
-        /// <param name="hub">Train <see cref="Hub"/> instance to set the current movement speed of.</param>
+        /// <param name="hub">Train <see cref="TwoPortHub"/> instance to set the current movement speed of.</param>
         /// <param name="enabled">Flag enabling/disabling the lights on a given train</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="speed"/> is not between -100 and 100.</exception>
-        public async Task SetTrainLightState(Hub hub, bool enabled)
+        public async Task SetTrainLightState(TwoPortHub hub, bool enabled)
         {
-            // Retrieve our lights and verify there is at least one light attached
-            var trainHub = hub as TwoPortHub;
-            if (trainHub == null)
-                return;
-            
-            var light = legoHubService.GetCustomLights(trainHub);
+            // Retrieve our lights and verify there is at least one light attached            
+            var light = legoHubService.GetCustomLights(hub);
             var powerMode = light.SingleValueMode<sbyte, sbyte>(0);
             if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
             else  await powerMode.WriteDirectModeDataAsync(0x00); 

@@ -42,7 +42,7 @@ namespace LegoCity.Api.Controllers.V1
         {
             var train = trainService.GetTrainHubByName(hubName);
             if (train == null) throw new HttpObjectNotFoundException($"Train with name {hubName} not found.");
-            return trainService.GetTrainSpeed(train).FirstOrDefault();
+            return trainService.GetTrainSpeed(train);
         }
 
         [HttpPost("{hubName}/speed")]

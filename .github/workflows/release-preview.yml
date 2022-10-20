@@ -16,7 +16,7 @@ env:
 # All jobs defined by this workflow
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 15
     steps:
         # Checkout our application source code

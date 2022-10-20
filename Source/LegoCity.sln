@@ -5,7 +5,18 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoCity.Api", "LegoCity.Api\LegoCity.Api.csproj", "{DDBAC1E3-6306-446F-B1CD-A254D3067EF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegoCity.Api.Client", "LegoCity.Api.Client\LegoCity.Api.Client.csproj", "{B5F161BA-51AC-4515-9595-47E1A127F3E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegoCity.Api.Client", "LegoCity.Api.Client\LegoCity.Api.Client.csproj", "{B5F161BA-51AC-4515-9595-47E1A127F3E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89F557F1-4C29-4683-89C1-2A08B57D393E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{11DAEEB9-3E08-4E63-B21C-7DA036E666CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A26635D4-637E-4AD1-8A46-40D1976E2658}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\release-preview.yml = ..\.github\workflows\release-preview.yml
+		..\.github\workflows\release.yml = ..\.github\workflows\release.yml
+		..\.github\workflows\tests.yml = ..\.github\workflows\tests.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +35,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11DAEEB9-3E08-4E63-B21C-7DA036E666CC} = {89F557F1-4C29-4683-89C1-2A08B57D393E}
+		{A26635D4-637E-4AD1-8A46-40D1976E2658} = {11DAEEB9-3E08-4E63-B21C-7DA036E666CC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0F81938D-FBE4-4822-81BC-1102D59F477D}

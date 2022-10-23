@@ -43,9 +43,9 @@ namespace LegoCity.Api.Utils
         /// <summary>Configures an <see cref="IServiceCollection"/> instane to support Discord bot interactions</summary>
         /// <param name="services"><see cref="IServiceCollection"/> to configure Discord for.</param>
         /// <param name="configuration">Root <see cref="IConfiguration"/> to pull the Discord config from.</param>
-        public static void AddDiscordBotSupport(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDiscordBotSupport(this IServiceCollection services, IConfiguration section)
         {
-            services.Configure<DiscordOptions>(configuration.GetSection("Discord"));
+            services.Configure<DiscordOptions>(section);
             services.AddSingleton(socketConfig);
             services.AddSingleton<DiscordSocketClient>();
             services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
@@ -78,6 +78,15 @@ namespace LegoCity.Api.Utils
             services.Configure<TimeOfDayOptions>(section);
             services.AddSingleton<TimeOfDayManager>();
             services.AddHostedService<TimeOfDayBackgroundService>();
+        }
+
+        /// <summary>Configures the <see cref="IServiceCollection"/> to support city lighting controls using RaspberryPi GPIO pins.</summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure.</param>
+        /// <param name="section">Section to configure city lighting options using.</param>
+        public static void AddLegoCityLightingServices(this IServiceCollection services, IConfiguration section)
+        {
+            services.Configure<CityLightingOptions>(section);
+            services.AddHostedService<LegoCityLightingService>();
         }
 
         /// <summary>Configures an <see cref="IServiceCollection"/> instance to support SignalR hub services.</summary>

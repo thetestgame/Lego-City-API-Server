@@ -53,7 +53,7 @@ namespace LegoCity.Api.Services.Discord.Modules
                 return;
             }
 
-            await this.trainService.SetTrainLightState(trainHub, state);
+            await this.trainService.SetTrainLightStateAsync(trainHub, state);
             await RespondAsync($"Set train {trainName} lights to {state}");
         }
     }

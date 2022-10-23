@@ -3,19 +3,26 @@
 
 namespace LegoCity.Api.Services.Lego
 {
+    using LegoCity.Api.Models.Events;
+    using MessagePipe;
     using SharpBrick.PoweredUp;
 
     /// <summary>Singleton service for ineracting with connected Lego train instances.</summary>
-    public class LegoTrainService
+    public class LegoTrainService : IDisposable
     {
         private readonly PoweredUpHost poweredUpHost;
         private readonly LegoHubService legoHubService;
+        private readonly IDisposable disposable;
         private TwoPortHub? activeTrain;
 
-        public LegoTrainService(PoweredUpHost poweredUpHost, LegoHubService legoHubService)
+        public LegoTrainService(PoweredUpHost poweredUpHost, LegoHubService legoHubService, ISubscriber<TimeOfDayChangedEvent> todChangedEvent)
         {
             this.poweredUpHost = poweredUpHost;
             this.legoHubService = legoHubService;
+
+            var bag = DisposableBag.CreateBuilder();
+            todChangedEvent.Subscribe(this.OnTimeOfDayUpdated).AddTo(bag);
+            this.disposable = bag.Build();
         }
 
         /// <summary>Returns an <see cref="IEnumerable{T}"/> containing all the trains that have been discovered.</summary>
@@ -79,7 +86,7 @@ namespace LegoCity.Api.Services.Lego
         /// <param name="hub">Train <see cref="TwoPortHub"/> instance to set the current movement speed of.</param>
         /// <param name="enabled">Flag enabling/disabling the lights on a given train</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="speed"/> is not between -100 and 100.</exception>
-        public async Task SetTrainLightState(TwoPortHub hub, bool enabled)
+        public async Task SetTrainLightStateAsync(TwoPortHub hub, bool enabled)
         {
             // Retrieve our lights and verify there is at least one light attached            
             var standardLights = this.legoHubService.GetTrainLights(hub);
@@ -98,6 +105,39 @@ namespace LegoCity.Api.Services.Lego
                 if (enabled) await powerMode.WriteDirectModeDataAsync(0x64);
                 else await powerMode.WriteDirectModeDataAsync(0x00);
             }
+        }
+
+        /// <summary>Updates the lights on all the trains to match the current time of day.</summary>
+        /// <param name="todEvent">Event to operate on from the time of day manager</param>
+        private void OnTimeOfDayUpdated(TimeOfDayChangedEvent todEvent)
+        {
+            var trains = this.GetTrainHubs();
+            var updateTasks = new List<Task>();
+            foreach (var train in trains)
+            {
+                if (!train.IsConnected)
+                    continue;
+
+                var lightTask = this.SetTrainLightStateAsync(train, todEvent.IsNightTime);
+                lightTask.Start();
+                updateTasks.Add(lightTask);
+            }
+
+            Task.WaitAll(updateTasks.ToArray());
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.disposable.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

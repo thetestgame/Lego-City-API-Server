@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Jordan Maxwell. All rights reserved.
 // See LICENSE file in the project root for full license information.
 
+using LegoCity.Api.Models.Events;
 using LegoCity.Api.Services.Lego;
+using MessagePipe;
 
 namespace LegoCity.Api.Services.Environment
 {
@@ -9,7 +11,7 @@ namespace LegoCity.Api.Services.Environment
     public class TimeOfDayManager
     {
         private readonly ILogger logger;
-        private readonly LegoTrainService legoTrainService;
+        private readonly IPublisher<TimeOfDayChangedEvent> todEventPublisher;
 
         /// <summary>Flag determining if auto time of day is enabled.</summary>
         public bool AutoTimeOfDayEnabled { get; private set; } = true;
@@ -23,55 +25,55 @@ namespace LegoCity.Api.Services.Environment
         /// <summary>Flag determining if its currently day time</summary>
         public bool IsDayTime   => !this.IsNightTime;
 
-        public TimeOfDayManager(ILogger<TimeOfDayManager> logger, LegoTrainService legoTrainService)
+        public TimeOfDayManager(ILogger<TimeOfDayManager> logger, IPublisher<TimeOfDayChangedEvent> todEventPublisher)
         {
             this.logger = logger;
-            this.legoTrainService = legoTrainService;
+            this.todEventPublisher = todEventPublisher;
         }
 
         /// <summary>Performs a time of day tick. Incrementing the hour of day and adjusting the model lights to match.</summary>
-        public async Task TickTimeOfDayAsync()
+        public Task TickTimeOfDayAsync()
         {
             // Check if auto time of day is enabled
             if (!this.AutoTimeOfDayEnabled)
-                return;
+                return Task.CompletedTask;
 
             // Increment the time of day
             this.autoTimeOfDay++;
             if (this.autoTimeOfDay > 23) this.autoTimeOfDay = 0;
-            this.logger.LogInformation($"Time of day has changed to {this.autoTimeOfDay}");
+            this.logger.LogDebug("Time of day has changed to {time}", this.autoTimeOfDay);
 
-            // Update all our lights
-            await this.UpdateLegoTrainLightsAsync();
+            // Fire our update event
+            this.SendUpdateEvent(this.autoTimeOfDay);
+
+            return Task.CompletedTask;
         }
 
-        /// <summary>Updates the lights on all the trains to match the current time of day.</summary>
-        private async Task UpdateLegoTrainLightsAsync()
+        /// <summary>Sends an <see cref="TimeOfDayChangedEvent"/> event for other services to respond to the new time of day.</summary>
+        /// <param name="current">Current time of day to publish in the message.</param>
+        private void SendUpdateEvent(int current)
         {
-            var trains = this.legoTrainService.GetTrainHubs();
-            foreach (var train in trains)
+            this.todEventPublisher.Publish(new TimeOfDayChangedEvent
             {
-                if (!train.IsConnected)
-                    continue;
-
-                await this.legoTrainService.SetTrainLightState(train, this.IsNightTime);
-            }
+                HourOfDay = current,
+                IsNightTime = current > 18 || current < 6
+            });
         }
 
         /// <summary>Enables/Disables auto time of day</summary>
         /// <param name="enabled">Flag determining state</param>
-        public async Task SetAutoTimeOfDayAsync(bool enabled)
+        public void SetAutoTimeOfDay(bool enabled)
         {
             this.AutoTimeOfDayEnabled = enabled;
-            await this.UpdateLegoTrainLightsAsync();
+            this.SendUpdateEvent(this.autoTimeOfDay);
         }
 
-        /// <summary>Sets the time of day to a specific hour. Only works if <see cref="SetAutoTimeOfDayAsync(bool)"/> is set to false.</summary>
+        /// <summary>Sets the time of day to a specific hour. Only works if <see cref="SetAutoTimeOfDay(bool)"/> is set to false.</summary>
         /// <param name="hourOfDay">Time of day to set.</param>
-        public async Task SetForcedTimeOfDayAsync(int hourOfDay)
+        public void SetForcedTimeOfDay(int hourOfDay)
         {
             this.forcedTimeOfDay = hourOfDay;
-            await this.UpdateLegoTrainLightsAsync();
+            this.SendUpdateEvent(this.forcedTimeOfDay);
         }
     }
 }

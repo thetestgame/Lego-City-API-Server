@@ -21,7 +21,7 @@ namespace LegoCity.Api.Controllers.V1
         /// <summary>Sets the time of day to a specific hour. Only works if "light/tod/auto" is set to false.</summary>
         /// <inheritdoc cref="TimeOfDayManager.SetForcedTimeOfDayAsync(int)"/>
         [HttpPost("tod/time")]
-        public async Task SetCurrentTimeOfDay([FromServices] TimeOfDayManager timeOfDayManager, int hourOfDay) => await timeOfDayManager.SetForcedTimeOfDayAsync(hourOfDay);
+        public void SetCurrentTimeOfDay([FromServices] TimeOfDayManager timeOfDayManager, int hourOfDay) => timeOfDayManager.SetForcedTimeOfDay(hourOfDay);
 
         /// <summary>Retrieves the current auto time of day setting.</summary>
         /// <returns>True if auto time of day management is enabled</returns>
@@ -31,6 +31,6 @@ namespace LegoCity.Api.Controllers.V1
         /// <summary>Enables or disables auto time of day management.</summary>
         /// <param name="enabled">New setting for <see cref="TimeOfDayManager.AutoTimeOfDayEnabled"/> to set.</param>
         [HttpPost("tod/auto")]
-        public async Task SetAutoTimeOfDayEnabledAsync([FromServices] TimeOfDayManager timeOfDayManager, bool enabled) => await timeOfDayManager.SetAutoTimeOfDayAsync(enabled);
+        public void SetAutoTimeOfDayEnabled([FromServices] TimeOfDayManager timeOfDayManager, bool enabled) => timeOfDayManager.SetAutoTimeOfDay(enabled);
     }
 }

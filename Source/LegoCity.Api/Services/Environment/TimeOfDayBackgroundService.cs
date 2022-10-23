@@ -25,7 +25,7 @@ namespace LegoCity.Api.Services.Environment
             while (!stoppingToken.IsCancellationRequested)
             {
                 await this.timeOfDayManager.TickTimeOfDayAsync();
-                await Task.Delay(TimeSpan.FromMinutes(options.MinutesBetweenTicks));
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);// TimeSpan.FromMinutes(options.MinutesBetweenTicks));
             }
         }
     }

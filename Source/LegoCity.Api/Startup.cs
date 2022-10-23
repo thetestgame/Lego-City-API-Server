@@ -4,6 +4,7 @@
 namespace LegoCity.Api
 {
     using LegoCity.Api.Utils;
+    using MessagePipe;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
     /// <summary>Startup class for the Eco Website.</summary>
@@ -20,12 +21,14 @@ namespace LegoCity.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.AddMessagePipe();
             services.AddSignalRHubs();
             services.AddRestApiControllers();
 
             services.AddLegoPoweredUpServices();
+            services.AddLegoCityLightingServices(this.Configuration.GetSection("CityLighting"));
             services.AddTimeOfDayServices(this.Configuration.GetSection("TimeOfDay"));
-            services.AddDiscordBotSupport(this.Configuration);
+            services.AddDiscordBotSupport(this.Configuration.GetSection("Discord"));
 
             services.AddApiVersioning();
             services.ConfigureApiVersioning(new()

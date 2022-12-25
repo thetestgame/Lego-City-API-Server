@@ -7,7 +7,6 @@ namespace LegoCity.Api
     using MessagePipe;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
-    /// <summary>Startup class for the Eco Website.</summary>
     public class Startup
     {
         public Startup(IConfiguration configuration) 
